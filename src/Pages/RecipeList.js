@@ -9,12 +9,8 @@ import { useNavigate } from 'react-router-dom';
 const RecipeList = () => {
      const [recipes, setRecipes] = useState([]);
      const [nationality, setNationality] = useState("");
+     const [sortBy, setSortBy] = useState("");
      const navigate = useNavigate();
-
-//   const handleProductsList = (categoryId) => {
-//     console.log("category stored: ", localStorage.getItem('categoryId'))
-//     navigate(`/categories/${categoryId}/products`);
-//   };
 
      useEffect(() => {
           fetch(`http://localhost:8080/recipes`)
@@ -33,6 +29,10 @@ const RecipeList = () => {
           navigate(`/${random.recipeId}`)
      }
 
+     const handleRecipesList = (recipeId) => {
+          navigate(`/recipes/${recipeId.recipeId}`);
+     };
+
      return (
           <div>
                <PageHeader />
@@ -43,13 +43,24 @@ const RecipeList = () => {
                          data={["Chinese", "Canadian"]}
                          onChange={(nextValue) => setNationality(nextValue)}
                          />
+                         <select
+                              className="custom-select"
+                              id="sortSelect"
+                              value={sortBy}
+                              onChange={(e) => setSortBy(e.target.value)}
+                              >
+                              <option value="">hi</option>
+                              <option value="lowToHigh">by</option>
+                         </select>
 
                          <input type='button' value={"Random Recipe"} onClick={generateRandomRecipe}/>
                     </div>
 
                     {recipes.map(recipe => (
+                         <div onClick={() => handleRecipesList(recipe)} className="recipe-card">
                          <Recipe
-                         recipe={recipe} />
+                         recipe={recipe}/>
+                         </div>
                     ))}
                </div>
           </div>
