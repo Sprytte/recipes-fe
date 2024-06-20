@@ -21,6 +21,7 @@ const RecipeDetails = () => {
     setPortion(recipe.portion)
   }, []);
   
+  // function getIngredientPortion
 
   return (
     <div>
@@ -60,16 +61,20 @@ const RecipeDetails = () => {
 
           <div className='recipe-note-card'>
             <h3>Ingredients</h3>
-            {recipe.ingredients.map((ingredient,nb) => (
-              <p className='recipe-card-row'>{(nb+1)}.&nbsp;{ingredient}</p>
+            {recipe && recipe.ingredients && recipe.ingredients.map((ingredient,nb) => (
+              <p className='recipe-card-row'>
+                {(nb+1)}.&nbsp;{(ingredient.split(" ")[0]) * (portion / recipe.portion)} {ingredient.slice(1)}
+                </p>
             ))}
           </div>
-          <div className='recipe-note-card'>
-            <h3>Steps</h3>
-            {recipe.steps.map((ingredient,nb) => (
-              <p className='recipe-card-row'>{(nb+1)}.&nbsp;{ingredient}</p>
-            ))}
-          </div>
+          {recipe && recipe.sections && recipe.sections.map((section,nb) => (
+            <div className='recipe-note-card'>
+              <h3>{section.name}</h3>
+              {section && section.steps.map((step,nb) => (
+                <p className='recipe-card-row'>{(nb+1)}.&nbsp;{step}</p>
+              ))}
+            </div>
+          ))}
 
           <div className='container'>
             <div style={{color:'white'}}>
