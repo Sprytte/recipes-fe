@@ -5,6 +5,24 @@
   width: 100%;
 }
 
+.header ul {
+  list-style: none;
+  display: flex;
+  justify-content: center;
+  padding: 35px;
+  margin: 0;
+}
+
+.header ul li {
+  margin: 0 15px;
+}
+
+.header ul li a {
+  color: white;
+  text-decoration: none;
+  font-size: 18px;
+}
+
 .container{
   margin: 2% 4%;
   justify-content: center;
@@ -53,4 +71,38 @@
   padding: 0.3% 7%;
   border-top: 1.5px solid #65ccf8;
   text-align: left;
+}
+
+/* Add Recipe */
+.form-container {
+  min-height: 100vh;
+  font-size: calc(10px + 2vmin);
+  color: white;
+}
+
+.form-container form {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.form-container form div {
+  margin: 10px 0;
+}
+
+.form-container label {
+  margin-right: 10px;
+}
+
+.form-container input {
+  padding: 5px;
+  font-size: 16px;
+}
+
+.form-container button {
+  padding: 10px 20px;
+  font-size: 16px;
+  background-color: #61dafb;
+  border: none;
+  cursor: pointer;
 }
