@@ -63,7 +63,7 @@ const RecipeDetails = () => {
             <h3>Ingredients</h3>
             {recipe && recipe.ingredients && recipe.ingredients.map((ingredient,nb) => (
               <p className='recipe-card-row'>
-                {(nb+1)}.&nbsp;{(ingredient.split(" ")[0]) * (portion / recipe.portion)} {ingredient.slice(1)}
+                {(nb+1)}.&nbsp;{(ingredient.split("^")[0]) * (portion / recipe.portion)} {ingredient.split("^")[1]}
                 </p>
             ))}
           </div>
