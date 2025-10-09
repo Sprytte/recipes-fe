@@ -5,23 +5,37 @@ import { useParams } from 'react-router-dom';
 import Box from '@mui/material/Box';
 import Slider from '@mui/material/Slider';
 import Typography from '@mui/material/Typography';
+import { fraction, multiply, evaluate } from 'mathjs';
 
 const RecipeDetails = () => {
   const [recipe, setRecipe] = useState({});
   const { id } = useParams();
   const [portion, setPortion] = useState(1);
+  // const math = require('mathjs')
 
   useEffect(() => {
-    fetch(`http://localhost:8080/recipes/${id}`)
+    fetch(`http://localhost:8000/api/recipes/${id}`)
       .then(response => response.json())
-      .then(data => setRecipe(data))
+      .then(data => setRecipe(data.recipe))
       .catch(error => console.error('Error fetching recipe:', error));
   }, []);
   useEffect(() => {
     setPortion(recipe.portion)
+    console.log(recipe)
   }, []);
   
   // function getIngredientPortion
+  const calculateQty = (qty) => {
+    if(portion != null && portion != 0){
+    //   console.log("?? " + fraction(qty))
+    //   console.log(" RAH " + portion + " " + recipe.portion)
+    //   console.log("UH" + fraction(portion, recipe.portion))
+      // const final = multiply(fraction(qty),fraction(portion / recipe.portion))
+      // console.log("interesting" + final)
+      // return final.d
+      return qty  * (portion / recipe.portion)
+    }
+  }
 
   return (
     <div>
@@ -32,8 +46,8 @@ const RecipeDetails = () => {
                 <img src="https://www.allrecipes.com/thmb/BKa1OqunLWMkCDJm_3LtxF_Pn88=/282x188/filters:no_upscale():max_bytes(150000):strip_icc():format(webp)/23600-worlds-best-lasagna-DDMFS-4x3-1196-24c5401652934ffb96d3d94bc9fbe2d7.jpg" width={200}/>
               </div>
               <div className='inner'>
-                <h3>{recipe.name} </h3>
-                <p>{recipe.cookTime} </p>
+                <h3>{recipe.recipe_name} </h3>
+                <p>{recipe.cook_time} </p>
               </div>
               <div className='inner'>
                 <p>{recipe.nationality} </p>
@@ -52,7 +66,8 @@ const RecipeDetails = () => {
                   aria-label="Small"
                   valueLabelDisplay="auto"
                   onChange={(value) => setPortion(value.target.value)}
-                  max={12}
+                  max={24}
+                  min={1}
                   // step={2}
                 />
               </Box>
@@ -63,13 +78,13 @@ const RecipeDetails = () => {
             <h3>Ingredients</h3>
             {recipe && recipe.ingredients && recipe.ingredients.map((ingredient,nb) => (
               <p className='recipe-card-row'>
-                {(nb+1)}.&nbsp;{(ingredient.split("^")[0]) * (portion / recipe.portion)} {ingredient.split("^")[1]}
+                {(nb+1)}.&nbsp;{calculateQty(ingredient.split("^")[0])} {ingredient.split("^")[1]}
                 </p>
             ))}
           </div>
           {recipe && recipe.sections && recipe.sections.map((section,nb) => (
             <div className='recipe-note-card'>
-              <h3>{section.name}</h3>
+              <h3>{section.section_name}</h3>
               {section && section.steps.map((step,nb) => (
                 <p className='recipe-card-row'>{(nb+1)}.&nbsp;{step}</p>
               ))}

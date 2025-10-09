@@ -4,7 +4,6 @@
   height: 90px;
   width: 100%;
 }
-
 .header ul {
   list-style: none;
   display: flex;
@@ -12,11 +11,9 @@
   padding: 35px;
   margin: 0;
 }
-
 .header ul li {
   margin: 0 15px;
 }
-
 .header ul li a {
   color: white;
   text-decoration: none;
@@ -32,12 +29,49 @@
 }
 
 /* Recipe list */
-.recipe-card{
-  background-color: #EAEAEA;
+.recipe-card {
+  background-color: rgba(165, 165, 165, 0.1);
+  /* opacity: 0.1; */
   margin: 5%;
-  width: 270px;
-  border-radius: 5px;
-  padding: 10px 3px;
+  width: 240px;
+  border: 1px solid rgba(238, 238, 238, 0.5);
+  border-radius: 2px;
+  padding-bottom: 1%;
+  color: white;
+}
+.recipe-card p{
+  /* text-align: left; */
+}
+.recipe-card button{
+  background-color: #0bd3c6;
+  padding: 2% 3%;
+  border-radius: 10px;
+  border-style: none;
+
+}
+
+.home-pizzaazz{
+  background-image: linear-gradient(#09134B, #240C82);
+  width: 100%;
+  padding: 4%;
+  justify-content: center;
+  text-align: center;
+  display: flex;
+  flex-wrap: wrap;
+  vertical-align: middle;
+  color: white;
+}
+.home-pizzaazz img{
+  width: 200px;
+  height: 150px;
+  padding: 0 1.5%;
+}
+.home-pizzaazz p{
+  width: 20%;
+  margin: auto;
+  margin-left: 0;
+  margin-right: 0;
+  text-align: left;
 }
 
 /* Recipe details */
