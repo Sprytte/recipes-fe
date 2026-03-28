@@ -1,15 +1,38 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import PageHeader from '../Components/PageHeader';
+import Select,{ InputActionMet } from 'react-select';
 
 const AddRecipe = () => {
+    const [nationalities, setNationality] = useState([]);
+    useEffect(() => {
+              fetch(`http://localhost:8000/api/nationalities`)
+                   .then(response => response.json())
+                   .then(data => setNationality(data.nationalities))
+                   .catch(error => console.error('Error fetching nationalities:', error));
+         }, []);
+    
+    const [categories, setCategories] = useState([]);
+    useEffect(() => {
+              fetch(`http://localhost:8000/api/categories`)
+                   .then(response => response.json())
+                   .then((data) => {
+                      const formatted = data.categories.map(cat => ({
+                        value: cat.id,
+                        label: cat.name
+                      }));
+                      setCategories(formatted);
+                    })
+                   .catch(error => console.error('Error fetching categories:', error));
+         }, []);
+
      const [formData, setFormData] = useState({
           name: '',
           ingredients: [{ quantity: '', ingredient: '' }],
-          type: '',
+          type: [{id: 0, name: ''}],
           nationality: '',
           source: '',
           portion: 0,
-          creator: '',
+          creator: 'Emilie',
           cookTime: '',
           imageLinks: '',
           sections: [{name: '', steps: [], time: '', order: 0}]
@@ -17,6 +40,7 @@ const AddRecipe = () => {
       
         const handleChange = (e) => {
           const { name, value } = e.target;
+          console.log(name + 'natinoaltu ' + value)
           setFormData({
             ...formData,
             [name]: value
@@ -40,7 +64,6 @@ const AddRecipe = () => {
           setFormData({ ...formData, ingredients: newIngredients });
         };
       
-
         const handleSectionChange = (index, event) => {
           const { name, value } = event.target;
           const newSections = [...formData.sections];
@@ -79,36 +102,84 @@ const AddRecipe = () => {
           setFormData({ ...formData, sections: newSections });
         };
 
+        // const handleTypeChange = (sectionIndex, stepIndex, event) => {
+        //   const { value } = event.target;
+        //   const updatedFormData = { ...formData };
+        //   updatedFormData.sections[sectionIndex].steps[stepIndex] = value;
+        //   setFormData(updatedFormData);
+        // };   
+        const handleAddType = (choice) => {
+          console.log(choice)
+          let newCategories = [];
+          choice.map(cat => {
+            newCategories.push({
+              id: cat.value,
+              name: cat.label
+            })
+          });
+          // const newType = {id: value.split(':')[0], name: value.split(':')[1]};
+          setFormData({
+            ...formData, 
+            type: newCategories
+          });
+          // setCategories(categories.filter((val) => val.id !== newType.id));
+        };
+
         const handleSubmit = (e) => {
           e.preventDefault();
           const data = {
             ...formData,
             ingredients: formData.ingredients.map(item => `${item.quantity}^${item.ingredient}`),
-            type: formData.type.split(',').map(item => item.trim()),
+            type: formData.type.map(type => type.id).toString(),
             imageLinks: formData.imageLinks.split(',').map(item => item.trim()),
             // sectionRequestDTOs: formData.sections
           };
           
           console.log(data)
-          fetch(`http://localhost:8080/recipes`, { method: "POST",
+          fetch(`http://localhost:8000/api/recipes/`, { method: "POST",
             body: JSON.stringify({
-              name: data.name,
+              recipe_name: data.name,
               ingredients: data.ingredients,
               type: data.type,
               nationality: data.nationality,
               source: data.source,
               portion: data.portion,
               creator:data.creator,
-              cookTime: data.cookTime,
-              imageLinks: data.imageLinks,
-              sectionRequestDTOs: data.sections
+              image_links: data.imageLinks,
+              // sectionRequestDTOs: data.sections
             }),
             headers: {
-                "Content-type": "application/json; charset=UTF-8"
+                "content-type": "application/json"
             }
-        })
-        .then(response => console.log(response))
-        };        
+          })
+          .then((response) => response.json())
+          .then(data => {
+            console.log(data);
+            sendSections(data.recipes.id)
+          })
+          .catch(response => console.log(response))
+        };
+        
+        const sendSections = (recipe_id) => {
+          console.log(formData.sections)
+          // const section = formData.sections[0]
+          formData.sections.forEach(section => {
+          fetch(`http://localhost:8000/api/sections/`, { method: "POST",
+            body: JSON.stringify({
+              recipe_id: recipe_id,
+              section_name: section.name,
+              steps: section.steps,
+              section_time: section.time,
+              section_order: section.order
+            }),
+            headers: {
+                "content-type": "application/json"
+            }
+          })
+          .then(response => console.log(response))
+          .catch(response => console.log(response))
+          })
+        }
       
         return (
           <div>
@@ -118,8 +189,8 @@ const AddRecipe = () => {
                          <h1>Recipe Form</h1>
                          <form onSubmit={handleSubmit}>
                               <div>
-                              <label>Name:</label>
-                              <input type="text" name="name" value={formData.name} onChange={handleChange} />
+                                <label>Name:</label>
+                                <input type="text" name="name" value={formData.name} onChange={handleChange} />
                               </div>
                               <div>
                                 <label>Ingredients:</label>
@@ -131,7 +202,7 @@ const AddRecipe = () => {
                                     placeholder="Quantity"
                                     value={ingredient.quantity}
                                     onChange={(event) => handleIngredientChange(index, event)}
-                                    />
+                                    /> &nbsp;
                                     <input
                                     type="text"
                                     name="ingredient"
@@ -144,67 +215,31 @@ const AddRecipe = () => {
                                 ))}
                                 <button type="button" onClick={handleAddIngredient}>Add Ingredient</button>
                               </div>
+                              
                               <div>
-                              <label>Type (comma separated):</label>
-                              <input type="text" name="type" value={formData.type} onChange={handleChange} />
+                                <label>Source:</label>
+                                <input type="text" name="source" value={formData.source} onChange={handleChange} />
                               </div>
                               <div>
-                              <label>Nationality:</label>
-                              <input type="text" name="nationality" value={formData.nationality} onChange={handleChange} />
+                                <label>Portion:</label>
+                                <input type="number" name="portion" value={formData.portion} min={1} onChange={handleChange} />
                               </div>
                               <div>
-                              <label>Source:</label>
-                              <input type="text" name="source" value={formData.source} onChange={handleChange} />
-                              </div>
-                              <div>
-                              <label>Portion:</label>
-                              <input type="number" name="portion" value={formData.portion} min={1} onChange={handleChange} />
-                              </div>
-                              <div>
-                              <label>Creator:</label>
-                              <input type="text" name="creator" value={formData.creator} onChange={handleChange} />
-                              </div>
-                              <div>
-                              <label>Cook Time:</label>
-                              <input type="text" name="cookTime" value={formData.cookTime} onChange={handleChange} />
-                              </div>
-                              <div>
-                              <label>Image Links (comma separated):</label>
-                              <input type="text" name="imageLinks" value={formData.imageLinks} onChange={handleChange} />
+                                <label>Image Links (comma separated):</label>
+                                <input type="text" name="imageLinks" value={formData.imageLinks} onChange={handleChange} />
                               </div>
                               <div>
                                 <label>Sections:</label>
                                 {formData.sections.map((section, index) => (
-                                <div key={index} style={{ marginBottom: '20px' }}>
-                                  <label>
-                                    Section Name:
+                                <div key={index} className='section-container'>
+                                  <div>
+                                    <label>Name:</label>
                                     <input
                                       type="text"
                                       name="name"
                                       value={section.name}
                                       onChange={(event) => handleSectionChange(index, event)}
                                     />
-                                  </label>
-                                  <div style={{ marginTop: '10px' }}>
-                                    <h4>Steps:</h4>
-                                    {section.steps.map((step, stIndex) => (
-                                      <div key={stIndex}>
-                                        <label>
-                                          Step {stIndex + 1}:
-                                          <input
-                                            type="text"
-                                            name="step"
-                                            placeholder="Step"
-                                            value={step}
-                                            onChange={(event) => handleStepChange(index, stIndex, event)}
-                                          />
-                                        </label>
-                                        <button type="button" onClick={() => handleRemoveStep(index, stIndex)}>Remove Step</button>
-                                      </div>
-                                    ))}
-                                    <button type="button" onClick={() => handleAddStep(index)}>
-                                      Add Step
-                                    </button>
                                   </div>
                                   <label>
                                     Time:
@@ -220,16 +255,63 @@ const AddRecipe = () => {
                                     <input
                                       type="number"
                                       name="order"
-                                      value={section.order}
+                                      value={index + 1}
                                       onChange={(event) => handleSectionChange(index, event)}
                                     />
                                   </label>
+                                  <div className='step-container'>
+                                    <h4>Steps:</h4>
+                                    {section.steps.map((step, stIndex) => (
+                                      <div key={stIndex}>
+                                        <label>
+                                          Step {stIndex + 1}:
+                                          <input
+                                            type="text"
+                                            name="step"
+                                            placeholder="Step"
+                                            value={step}
+                                            onChange={(event) => handleStepChange(index, stIndex, event)}
+                                          />
+                                        </label>
+                                        <button type="button" onClick={() => handleRemoveStep(index, stIndex)}>
+                                          <span>x</span> Remove Step
+                                        </button>
+                                      </div>
+                                    ))}
+                                    <button type="button" onClick={() => handleAddStep(index)}>
+                                      <span>+</span> Add Step
+                                    </button>
+                                  </div>
                                   <button type="button" onClick={() => handleRemoveSection(index)}>
                                     Remove Section
                                   </button>
                                 </div>
                               ))}
                                 <button type="button" onClick={handleAddSection}>Add Section</button>
+                              </div>
+                              <div>
+                                <label>Tags:</label>
+                                {categories && <Select
+                                  name="type" 
+                                  // value={formData.type} 
+                                  onChange={(choice) => handleAddType(choice)}
+                                  isMulti
+                                  options={categories}
+                                  // defaultValue={categories[0].value}
+                                  isSearchable
+                                  />}
+                              </div>
+                              <div>
+                                <label>Nationality:</label>
+                                <select
+                                  name="nationality"
+                                  value={formData.nationality}
+                                  onChange={handleChange}
+                                  >
+                                    {nationalities.map((nat) => (
+                                      <option value={nat.id}>{nat.name}</option>
+                                    ))}
+                                  </select>
                               </div>
                               <button type="submit">Done</button>
                          </form>

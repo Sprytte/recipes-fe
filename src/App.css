@@ -38,6 +38,7 @@
   border-radius: 2px;
   padding-bottom: 1%;
   color: white;
+  padding-top: 5px;
 }
 .recipe-card p{
   /* text-align: left; */
@@ -128,9 +129,12 @@
   margin-right: 10px;
 }
 
-.form-container input {
+.form-container input,select {
   padding: 5px;
   font-size: 16px;
+  background-color: #cfcfcf;
+  margin-left: 10px;
+  border-radius: 7px;
 }
 
 .form-container button {
@@ -139,4 +143,26 @@
   background-color: #61dafb;
   border: none;
   cursor: pointer;
+}
+
+.section-container{
+  margin-bottom: 20px;
+  border: 2px solid #b6b6b6;
+  padding: 5px;
+}
+
+.step-container{
+  margin-top: 10px;
+}
+.step-container button{
+  background-color: #087FD6;
+  border-radius: 7px;
+  color: #EEE;
+  font-weight: bold;
+  vertical-align: middle;
+}
+.step-container span{
+  color: #000106;
+  font-weight: bold;
+  font-size:large;
 }
