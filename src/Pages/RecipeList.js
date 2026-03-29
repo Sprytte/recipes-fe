@@ -8,7 +8,6 @@ import { useNavigate } from 'react-router-dom';
 
 const RecipeList = () => {
      const [recipes, setRecipes] = useState([]);
-     const [random, setRandom] = useState(0);
      const [nationality, setNationality] = useState("");
      const [sortBy, setSortBy] = useState("");
      const navigate = useNavigate();
@@ -23,13 +22,11 @@ const RecipeList = () => {
      const generateRandomRecipe = () =>{
           fetch(`http://localhost:8000/api/recipes/random`)
                .then(response => response.json())
-               // .then(data => console.log(data))
-               .then(data => setRandom(data))
+               .then(data => {
+                    navigate(`/recipes/${data}`);
+               })
                .catch(error => console.error('Error fetching recipes:', error));
      
-          // random = 2;
-          console.log(random)
-          navigate(`/recipes/${random}`)
      }
 
      const handleRecipesList = (recipeId) => {

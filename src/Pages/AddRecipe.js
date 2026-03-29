@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import PageHeader from '../Components/PageHeader';
-import Select,{ InputActionMet } from 'react-select';
+import Select from 'react-select';
 
 const AddRecipe = () => {
     const [nationalities, setNationality] = useState([]);
@@ -71,6 +71,7 @@ const AddRecipe = () => {
           setFormData({...formData, sections: newSections});
         };
         const handleAddSection = () => {
+          //TODO DONT HARDCODE ORDER
           setFormData({
             ...formData, 
             sections: [...formData.sections, {name: '', steps: [''], time: '', order: 0}]
@@ -117,12 +118,10 @@ const AddRecipe = () => {
               name: cat.label
             })
           });
-          // const newType = {id: value.split(':')[0], name: value.split(':')[1]};
           setFormData({
             ...formData, 
             type: newCategories
           });
-          // setCategories(categories.filter((val) => val.id !== newType.id));
         };
 
         const handleSubmit = (e) => {

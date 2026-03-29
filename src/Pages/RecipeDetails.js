@@ -22,18 +22,13 @@ const RecipeDetails = () => {
   useEffect(() => {
     setPortion(recipe.portion)
     console.log(recipe)
-  }, []);
+  }, [recipe]);
   
   // function getIngredientPortion
   const calculateQty = (qty) => {
     if(portion != null && portion != 0){
-    //   console.log("?? " + fraction(qty))
-    //   console.log(" RAH " + portion + " " + recipe.portion)
-    //   console.log("UH" + fraction(portion, recipe.portion))
-      // const final = multiply(fraction(qty),fraction(portion / recipe.portion))
-      // console.log("interesting" + final)
-      // return final.d
-      return qty  * (portion / recipe.portion)
+      const final = multiply(fraction(qty),fraction(portion / recipe.portion))
+      return final.toFraction()
     }
   }
 
@@ -47,9 +42,11 @@ const RecipeDetails = () => {
               </div>
               <div className='inner'>
                 <h3>{recipe.recipe_name} </h3>
-                <p>{recipe.cook_time} </p>
+                <p>{/*recipe.cook_time.split(":")[0] !== "00"*/} 
+                  Total time: {recipe.cook_time} </p>
               </div>
               <div className='inner'>
+                {/* TODO either return this as text or make api call to getById */}
                 <p>{recipe.nationality} </p>
               </div>
             </div>
@@ -57,9 +54,10 @@ const RecipeDetails = () => {
             <div>
               <Box sx={{ width: 300 }}>
               <Typography id="input-slider" gutterBottom style={{color: 'white'}}>
-                Portion <br />
+                Portion(s) <br />
                 {portion}
               </Typography>
+              {portion &&
                 <Slider
                   className='slider-portion'
                   defaultValue={portion}
@@ -68,12 +66,13 @@ const RecipeDetails = () => {
                   onChange={(value) => setPortion(value.target.value)}
                   max={24}
                   min={1}
-                  // step={2}
                 />
+              }
               </Box>
             </div>
           </div>
 
+          {/* Ingredients */}
           <div className='recipe-note-card'>
             <h3>Ingredients</h3>
             {recipe && recipe.ingredients && recipe.ingredients.map((ingredient,nb) => (
@@ -82,6 +81,8 @@ const RecipeDetails = () => {
                 </p>
             ))}
           </div>
+
+          {/* Sections */}
           {recipe && recipe.sections && recipe.sections.map((section,nb) => (
             <div className='recipe-note-card'>
               <h3>{section.section_name}</h3>
